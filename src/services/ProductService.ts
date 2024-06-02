@@ -1,6 +1,12 @@
 import { safeParse } from "valibot";
-import { DraftProductSchema, ProductsSchema, ProductSchema, Product } from "../types";
+import {
+  DraftProductSchema,
+  ProductsSchema,
+  ProductSchema,
+  Product,
+} from "../types";
 import axios from "axios";
+import { toBoolean } from "../helpers";
 
 type ProductData = {
   [k: string]: FormDataEntryValue;
@@ -49,6 +55,41 @@ export async function getProductsById(id: Product["id"]) {
       throw new Error("Hubo un error...");
     }
     return result.output;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updateProduct(data: ProductData, id: Product["id"]) {
+  try {
+    const result = safeParse(ProductSchema, {
+      id,
+      name: data.name,
+      price: +data.price,
+      availability: toBoolean(data.availability.toString()),
+    });
+    if (result.success) {
+      const url = `${import.meta.env.VITE_API_URL}/api/products/${id}`;
+      await axios.put(url, result.output);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updateAvailabilityProduct(id: Product["id"]) {
+  try {
+    const url = `${import.meta.env.VITE_API_URL}/api/products/${id}`;
+    await axios.patch(url);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteProduct(id: Product["id"]) {
+  try {
+    const url = `${import.meta.env.VITE_API_URL}/api/products/${id}`;
+    await axios.delete(url);
   } catch (error) {
     console.log(error);
   }

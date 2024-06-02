@@ -5,6 +5,8 @@ export const DraftProductSchema = object({
   price: number(),
 });
 
+export type DraftProduct = InferOutput<typeof DraftProductSchema>;
+
 export const ProductSchema = object({
   id: number(),
   name: string(),
